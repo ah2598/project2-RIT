@@ -8,7 +8,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class RITViewer extends Application
 {
@@ -18,22 +22,62 @@ public class RITViewer extends Application
     /** The pixel values of provided image*/
     private ArrayList<Integer> pixels = new ArrayList<Integer>();
 
+    /**
+     * Reads in the provided square grayscale image.
+     * The image is then stored into an array.
+     */
+    @Override
+    public void init() throws Exception {
+        super.init();
+
+        try
+        {
+            //Creates FileReader for provided file in arguments
+            List<String> args = getParameters().getRaw();
+            Scanner file = new Scanner(new File(args.get(0)));
+
+            //Reads in all pixel values
+            while (file.hasNextInt())
+            {
+                int pixel = Integer.parseInt(file.next());
+                pixels.add(pixel);
+
+                //Error Check: Pixel value isn't in range 0-255
+                if(pixel < 0 || pixel > 255)
+                {
+                    System.out.println("Image file contains invalid pixel value! (Valid pixel value: 0-255)");
+                    System.exit(-1);
+                }
+            }
+
+            //Determines image dimension
+            sideLength = (int) Math.sqrt(pixels.size());
+        }
+        //Error Check: The provided file cannot be found
+        catch(FileNotFoundException e)
+        {
+            System.out.println("Program cannot find the file specified!");
+            System.exit(-1);
+        }
+        //Error Check: Image file contains non-int value\
+        catch(NumberFormatException e)
+        {
+            System.out.println("Image file contains a non-integer!");
+            System.exit(-1);
+        }
+    }
+
     /***
      * Displays given image to the user.
      *
      * @param stage The stage to display to user
      */
     @Override
-    public void start(Stage stage)
+    public void start(Stage stage) throws Exception
     {
-        //Arbitrarily generates image
-        for(int i = 0; i < Math.pow(2,15); i++)
-            pixels.add(120);
-        sideLength = (int)Math.sqrt(pixels.size());
-
         //Sets the scene to the image array
         Group root = new Group();
-        Canvas canvas = new Canvas(500, 500);
+        Canvas canvas = new Canvas(sideLength, sideLength);
         drawImage(canvas.getGraphicsContext2D(), pixels, sideLength);
         root.getChildren().add(canvas);
 
@@ -69,6 +113,13 @@ public class RITViewer extends Application
 
     public static void main(String[] args)
     {
+        //Ensure that there are program arguments
+        if(args.length == 0)
+        {
+            System.out.println("Program does not have a file location argument!");
+            System.exit(-1);
+        }
+
         Application.launch(args);
     }
 }
