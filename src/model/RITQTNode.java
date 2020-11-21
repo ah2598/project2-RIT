@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 /**
  * Represents a Quadtree node in the tree for an image compressed using the
  * Rich Image Tool file format.
@@ -88,6 +90,53 @@ public class RITQTNode {
      * @return lower right sub-node
      */
     public RITQTNode getLowerRight() { return this.lr; }
+
+    /**
+     * Assuming this quadtree is the root,
+     * this quadtree is converted to a 2D image representation
+     *
+     * @param image the 2D image array to modify
+     * @param size the side length of this quadtree
+     * @return arraylist containing this image's pixel values
+     */
+    public int[][] uncompress(int[][] image, int size)
+    {
+        return uncompress(image, 0, 0, size);
+    }
+
+    /**
+     * Converts this quadtree into a 2D image representation,
+     * rowStart/colStart/size values are used to determine this quadtree's position
+     *
+     * @param rowStart the row component of this quadtree's starting coordinates
+     * @param colStart the col component of this quadtree's starting coordinates
+     * @param size the size of this quadtree
+     */
+    private int[][] uncompress(int[][] image, int rowStart, int colStart, int size)
+    {
+        //Base case: Quadtree is a leaf node
+        if(ul == null || ur == null || ll == null || lr == null)
+        {
+            for(int row = rowStart; row < rowStart + size; row++)
+            {
+                for(int col = colStart; col < colStart + size; col++)
+                {
+                    image[row][col] = val;
+                }
+            }
+        }
+        //Recursive case: Quadtree has children
+        else
+        {
+            int childSize = (int)Math.sqrt(size);
+            ul.uncompress(image, rowStart, colStart, childSize);
+            ur.uncompress(image, rowStart, colStart + size/2, childSize);
+            ll.uncompress(image, rowStart + size/2, colStart, childSize);
+            lr.uncompress(image, rowStart + size/2, colStart + size/2, childSize);
+        }
+
+        return image;
+    }
 
     @Override
     public String toString()
