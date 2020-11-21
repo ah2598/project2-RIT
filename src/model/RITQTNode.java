@@ -11,6 +11,9 @@ package model;
  * @author Sean Strout @ RIT
  */
 public class RITQTNode {
+    /** Value if this node is an interior node*/
+    private static final int SPLIT_VALUE = -1;
+
     /** The node's value */
     private int val;
 
@@ -87,7 +90,19 @@ public class RITQTNode {
     public RITQTNode getLowerRight() { return this.lr; }
 
     @Override
-    public String toString() {
-        return String.valueOf(this.val);
+    public String toString()
+    {
+        String string = String.valueOf(this.val);
+
+        //Base case: Not an interior node
+        if(val != -1)
+        {
+            return string + " ";
+        }
+        //Recursive case: An interior node
+        else
+        {
+            return string + " " + ul.toString() + ur.toString() + ll.toString() + lr.toString();
+        }
     }
 }

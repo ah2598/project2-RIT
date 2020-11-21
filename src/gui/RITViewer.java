@@ -39,11 +39,11 @@ public class RITViewer extends Application
             //Reads in all pixel values
             while (file.hasNextInt())
             {
-                int pixel = Integer.parseInt(file.next());
-                pixels.add(pixel);
+                int val = Integer.parseInt(file.next());
+                pixels.add(val);
 
                 //Error Check: Pixel value isn't in range 0-255
-                if(pixel < 0 || pixel > 255)
+                if(val < 0 || val > 255)
                 {
                     System.out.println("Image file contains invalid pixel value! (Valid pixel value: 0-255)");
                     System.exit(-1);
@@ -116,7 +116,7 @@ public class RITViewer extends Application
         //Ensure that there are program arguments
         if(args.length == 0)
         {
-            System.out.println("Program does not have a file location argument!");
+            System.out.println("Usage: java RITViewer uncompressed.txt");
             System.exit(-1);
         }
 
