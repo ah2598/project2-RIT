@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 public class RITUncompress
 {
+
     /**
      * Given a text representation of a quadtree,
      * create a Quadtree from said text.
@@ -39,7 +40,7 @@ public class RITUncompress
     {
         ArrayList<Integer> tokens = new ArrayList<Integer>();
 
-        //Adds each pixel value to arraylist
+        //Adds each quadtree value to arraylist
         try
         {
             while(file.hasNext())
@@ -126,9 +127,19 @@ public class RITUncompress
             System.exit(-1);
         }
 
-        //Reads and store file data
+        //Begins reading file
         System.out.println("Uncompressing: " + args[0]);
-        int sideLength = (int) Math.sqrt(input.nextInt());
+
+        //Error Check: Image is a square
+        double tempSideLength = Math.sqrt(input.nextInt());
+        int sideLength = (int) tempSideLength;
+        if(tempSideLength != sideLength)
+        {
+            System.out.println("Image provided is not a square!");
+            System.exit(-1);
+        }
+
+        //Reads and store file data
         ArrayList<Integer> tokens = readFile(input);
 
         //Converts arraylist into a quadtree structure and displays quadtree

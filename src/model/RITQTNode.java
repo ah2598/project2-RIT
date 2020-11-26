@@ -110,16 +110,17 @@ public class RITQTNode {
      *
      * @param rowStart the row component of this quadtree's starting coordinates
      * @param colStart the col component of this quadtree's starting coordinates
-     * @param size the size of this quadtree
+     * @param sideLength the sidelength  of this quadtree
+     * @return a 2D image array representation of this quadtree
      */
-    private int[][] uncompress(int[][] image, int rowStart, int colStart, int size)
+    private int[][] uncompress(int[][] image, int rowStart, int colStart, int sideLength)
     {
         //Base case: Quadtree is a leaf node
         if(ul == null || ur == null || ll == null || lr == null)
         {
-            for(int row = rowStart; row < rowStart + size; row++)
+            for(int row = rowStart; row < rowStart + sideLength; row++)
             {
-                for(int col = colStart; col < colStart + size; col++)
+                for(int col = colStart; col < colStart + sideLength; col++)
                 {
                     image[row][col] = val;
                 }
@@ -128,14 +129,28 @@ public class RITQTNode {
         //Recursive case: Quadtree has children
         else
         {
-            int childSize = (int)Math.sqrt(size);
-            ul.uncompress(image, rowStart, colStart, childSize);
-            ur.uncompress(image, rowStart, colStart + size/2, childSize);
-            ll.uncompress(image, rowStart + size/2, colStart, childSize);
-            lr.uncompress(image, rowStart + size/2, colStart + size/2, childSize);
+            int childLength = sideLength/2;
+            ul.uncompress(image, rowStart, colStart, childLength);
+            ur.uncompress(image, rowStart, colStart + sideLength/2, childLength);
+            ll.uncompress(image, rowStart + sideLength/2, colStart, childLength);
+            lr.uncompress(image, rowStart + sideLength/2, colStart + sideLength/2, childLength);
         }
 
         return image;
+    }
+
+    /**
+     * Converts the 2D image array into a quadtree
+     * rowStart/colStart/size values are used to determine this quadtree's position
+     *
+     * @param rowStart the row component of this quadtree's starting coordinates
+     * @param colStart the col component of this quadtree's starting coordinates
+     * @param sideLength the side length of this quadtree
+     * @return a quadtree representation of the 2D image array
+     */
+    public static RITQTNode compress(int[][] image, int rowStart, int colStart, int sideLength)
+    {
+        return null;
     }
 
     @Override
