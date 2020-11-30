@@ -29,11 +29,25 @@ public class RITGUI extends Application
     /** The output file to write to */
     private File outputFile = null;
 
+    /** Input file location display */
+    private Text inputLocation = new Text("");
+
+    /** Output file location display */
+    private Text outputLocation = new Text("");
+
     /** Text object containing console output */
     private Text consoleOutput = new Text("");
 
     /** Canvas containing displayed image */
     private Canvas canvas = new Canvas(512, 512);
+
+    /**
+     * Adds line to application console
+     */
+    public void outputLine(String input)
+    {
+        consoleOutput.setText(consoleOutput.getText() + input + "\n");
+    }
 
     /**
      * Returns the operations this program can perform.
@@ -52,7 +66,27 @@ public class RITGUI extends Application
         Button compress = new Button("Compress");
         compress.setOnAction((event) ->
                 {
-                    System.out.print("");
+                    try
+                    {
+                        //Reads input file
+                        consoleOutput.setText("");
+                        outputLine("Compressing: " + inputFile.getCanonicalPath() + "\n");
+                        Scanner fileReader = new Scanner(inputFile);
+                        ArrayList<Integer> pixels = RITCompress.readFile(fileReader);
+
+                        //Converts image list to quadtree
+                        int[][] image = RITCompress.listToImage(pixels);
+                        int sideLength = image.length;
+                        RITQTNode root = RITQTNode.compress(image, sideLength);
+
+                        outputLine("QTree: " + root);
+
+                        //Writes quadtree to output file
+                        RITCompress.writeQuadtree(root, outputFile);
+                        outputLine("Output file: " + outputFile.getCanonicalPath());
+                    }
+                    catch (FileNotFoundException e) { e.printStackTrace(); }
+                    catch (IOException e) { e.printStackTrace(); }
                 }
         );
         operations.getChildren().add(compress);
@@ -61,7 +95,26 @@ public class RITGUI extends Application
         Button decompress = new Button("Decompress");
         decompress.setOnAction((event) ->
                 {
-                    System.out.print("");
+                    try
+                    {
+                        //Reads input file
+                        consoleOutput.setText("");
+                        outputLine("Decompressing: " + inputFile.getCanonicalPath());
+                        Scanner fileReader = new Scanner(inputFile);
+                        int sideLength = (int) Math.sqrt(fileReader.nextInt());
+                        ArrayList<Integer> tokens = RITUncompress.readFile(fileReader);
+
+                        //Converts input to image array
+                        RITQTNode root = RITUncompress.parse(tokens);
+                        int[][] image = new int[sideLength][sideLength];
+                        outputLine("QTree: " + root);
+
+                        //Writes image array to output file
+                        RITUncompress.writeImage(root.uncompress(image, sideLength), outputFile);
+                        outputLine("Output file: " + outputFile.getCanonicalPath());
+                    }
+                    catch (FileNotFoundException e) { e.printStackTrace(); }
+                    catch (IOException e) { e.printStackTrace(); }
                 }
         );
         operations.getChildren().add(decompress);
@@ -74,11 +127,15 @@ public class RITGUI extends Application
                     {
                         //Reads and converts file to a list of pixels
                         Scanner fileReader = new Scanner(inputFile);
-
                         ArrayList<Integer> pixels = RITCompress.readFile(fileReader);
 
+                        //Changes canvas size
+                        int sideLength = (int)Math.sqrt(pixels.size());
+                        canvas.setHeight(sideLength);
+                        canvas.setWidth(sideLength);
+
                         //Draws pixels onto canvas
-                        RITViewer.drawImage(canvas.getGraphicsContext2D(), pixels, (int)Math.sqrt(pixels.size()));
+                        RITViewer.drawImage(canvas.getGraphicsContext2D(), pixels, sideLength);
                         consoleOutput.setText("Viewing: " + inputFile.getCanonicalPath());
                     }
                     catch (FileNotFoundException e) { e.printStackTrace(); }
@@ -93,6 +150,8 @@ public class RITGUI extends Application
                 {
                     inputFile = null;
                     outputFile = null;
+                    inputLocation.setText("");
+                    outputLocation.setText("");
                     consoleOutput.setText("\n\n\n\n\n");
                     canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 }
@@ -133,7 +192,6 @@ public class RITGUI extends Application
         //Second Row: Input file FileChooser
         HBox inputRow = new HBox();
         Button openInput = new Button("Set Input File");
-        Text inputLocation = new Text("");
         openInput.setPrefWidth(100);
         openInput.setOnAction((event) ->
             {
@@ -151,7 +209,6 @@ public class RITGUI extends Application
         //Third Row: Output file FileChooser
         HBox outputRow = new HBox();
         Button openOutput = new Button("Set Output File");
-        Text outputLocation = new Text("");
         openOutput.setPrefWidth(100);
         openOutput.setOnAction((event) ->
                 {

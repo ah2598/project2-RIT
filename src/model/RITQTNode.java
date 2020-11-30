@@ -94,12 +94,12 @@ public class RITQTNode {
      * this quadtree is converted to a 2D image representation
      *
      * @param image the 2D image array to modify
-     * @param size the side length of this quadtree
+     * @param sideLength the side length of this quadtree
      * @return arraylist containing this image's pixel values
      */
-    public int[][] uncompress(int[][] image, int size)
+    public int[][] uncompress(int[][] image, int sideLength)
     {
-        return uncompress(image, 0, 0, size);
+        return uncompress(image, 0, 0, sideLength);
     }
 
     /**
@@ -139,15 +139,15 @@ public class RITQTNode {
 
     /**
      * Assuming this quadtree is the root,
-     * this 2D image array is converted to a quadtreee representation
+     * this 2D image array is converted to a quadtree representation
      *
      * @param image the 2D image array to modify
-     * @param size the side length of this quadtree
+     * @param sideLength the side length of this quadtree
      * @return the quadtree representation of this image
      */
-    public static RITQTNode compress(int[][] image, int size)
+    public static RITQTNode compress(int[][] image, int sideLength)
     {
-        return compress(image, 0, 0, size);
+        return compress(image, 0, 0, sideLength);
     }
 
     /**
@@ -161,23 +161,21 @@ public class RITQTNode {
      */
     public static RITQTNode compress(int[][] image, int rowStart, int colStart, int sideLength)
     {
-        int childLength = sideLength/2;
-
         //Base case: This quadtree has sideLength = 1
         if(sideLength == 1)
             return new RITQTNode(image[rowStart][colStart]);
 
         //Recursive case: Processing of children nodes required
+        int childLength = sideLength/2;
         RITQTNode ul = compress(image, rowStart, colStart, childLength);
         RITQTNode ur = compress(image, rowStart, colStart + childLength, childLength);
         RITQTNode ll = compress(image, rowStart + childLength, colStart, childLength);
-        RITQTNode lr = compress(image, rowStart + childLength, colStart + sideLength/2, childLength);
+        RITQTNode lr = compress(image, rowStart + childLength, colStart + childLength, childLength);
 
-        //Case 1: The four subsections are the same, combine children nodes
-        if(ul.getVal() == ur.getVal() && ur.getVal() == ll.getVal() && ll.getVal() == lr.getVal())
+        //Case 1: The four subsections are the same non-leaf nodes, combine children nodes
+        if(ul.getVal() != -1 && ul.getVal() == ur.getVal() && ur.getVal() == ll.getVal() && ll.getVal() == lr.getVal())
             return new RITQTNode(ul.getVal());
-
-        //Case 2: The four subsections aren't the same, return parent node
+        //Case 2: The four subsections aren't the same, return this parent node
         else
             return new RITQTNode(-1, ul, ur, ll, lr);
     }
@@ -186,14 +184,10 @@ public class RITQTNode {
     public String toString()
     {
         //Base case: Not an interior node
-        if(val != -1)
-        {
-            return val + " ";
-        }
+        if(this.val != -1)
+            return this.val + " ";
         //Recursive case: An interior node
         else
-        {
-            return val + " " + ul.toString() + ur.toString() + ll.toString() + lr.toString();
-        }
+            return this.val + " " + this.ul.toString() + this.ur.toString() + this.ll.toString() + this.lr.toString();
     }
 }

@@ -3,7 +3,6 @@
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="gui.RITGUI" />
     <module name="RIT" />
-    <option name="PROGRAM_PARAMETERS" value="images/uncompressed/earth256x256.txt" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="gui.*" />
