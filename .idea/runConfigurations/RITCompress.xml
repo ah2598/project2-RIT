@@ -3,7 +3,7 @@
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="ptui.RITCompress" />
     <module name="RIT" />
-    <option name="PROGRAM_PARAMETERS" value="images/uncompressed/ritlogo128x128.txt output/compressed/ritlogo128x128.rit" />
+    <option name="PROGRAM_PARAMETERS" value="images/uncompressed/simple4x4.txt output/compressed/simple4x4.rit" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="ptui.*" />

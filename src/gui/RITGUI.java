@@ -70,7 +70,7 @@ public class RITGUI extends Application
                     {
                         //Reads input file
                         consoleOutput.setText("");
-                        outputLine("Compressing: " + inputFile.getCanonicalPath() + "\n");
+                        outputLine("Compressing: " + inputFile.getCanonicalPath());
                         Scanner fileReader = new Scanner(inputFile);
                         ArrayList<Integer> pixels = RITCompress.readFile(fileReader);
 
@@ -78,12 +78,16 @@ public class RITGUI extends Application
                         int[][] image = RITCompress.listToImage(pixels);
                         int sideLength = image.length;
                         RITQTNode root = RITQTNode.compress(image, sideLength);
-
                         outputLine("QTree: " + root);
 
                         //Writes quadtree to output file
-                        RITCompress.writeQuadtree(root, outputFile);
+                        int compressedSize = RITCompress.writeQuadtree(root, outputFile);
                         outputLine("Output file: " + outputFile.getCanonicalPath());
+
+                        //Compares quadtree statistic
+                        outputLine("Raw image size: " + sideLength * sideLength);
+                        outputLine("Compressed image size: " + compressedSize);
+                        outputLine("Compression %: " + RITCompress.compressionRate(sideLength * sideLength, compressedSize));
                     }
                     catch (FileNotFoundException e) { e.printStackTrace(); }
                     catch (IOException e) { e.printStackTrace(); }

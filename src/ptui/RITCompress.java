@@ -10,6 +10,11 @@ import java.util.Scanner;
 
 public class RITCompress
 {
+    public static double compressionRate(int rawSize, int compressedSize)
+    {
+        return 100 * (1 - (double)compressedSize / rawSize);
+    }
+
     /**
      * Given an arraylist of pixel values,
      * convert arraylist to a square 2d image array
@@ -88,7 +93,6 @@ public class RITCompress
     public static int writeQuadtree(RITQTNode root, File file)
     {
         int totalValues = -1;
-        String path = "";
 
         try
         {
@@ -100,7 +104,6 @@ public class RITCompress
             }
 
             //Writes quadtree to file, using quadtree's string representation
-            path = file.getCanonicalPath();
             FileWriter writer = new FileWriter(file);
             String[] values = root.toString().split(" ");
             for(int i = 0; i < values.length; i++)
@@ -114,8 +117,6 @@ public class RITCompress
             writer.close();
         }
         catch(IOException e){e.printStackTrace();}
-
-        System.out.println("Output file: " + path);
 
         return totalValues;
     }
@@ -154,10 +155,14 @@ public class RITCompress
         //Writes quadtree to text file
         File output = new File(args[1]);
         int totalValues = writeQuadtree(quadtree, output);
+        try{
+            System.out.println("Output file: " + output.getCanonicalPath());
+        }
+        catch (IOException e) { e.printStackTrace(); }
 
         //Display compression stats
         System.out.println("Raw image size: " + sideLength * sideLength);
         System.out.println("Compressed image size: " + totalValues);
-        System.out.println("Compression %: " + (sideLength * sideLength * 10.0) / totalValues);
+        System.out.println("Compression %: " + compressionRate(sideLength * sideLength, totalValues));
     }
 }

@@ -74,8 +74,6 @@ public class RITUncompress
      */
     public static void writeImage(int[][] image, File file)
     {
-        String path = "";
-
         try
         {
             //Checks whether or not file is already there
@@ -86,7 +84,6 @@ public class RITUncompress
             }
 
             //Writes image to file
-            path = file.getCanonicalPath();
             FileWriter writer = new FileWriter(file);
             for(int row = 0; row < image.length; row++)
             {
@@ -101,10 +98,7 @@ public class RITUncompress
             }
 
             writer.close();
-        }
-        catch(IOException e){e.printStackTrace();}
-
-        System.out.println("Output file: " + path);
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     public static void main(String[] args)
@@ -152,5 +146,8 @@ public class RITUncompress
         //Pixel array is written to file
         File file = new File(args[1]);
         writeImage(image, file);
+        try{
+            System.out.println("Outgput file: " + file.getCanonicalPath());
+        } catch(IOException e) { e.printStackTrace(); }
     }
 }
