@@ -17,7 +17,7 @@ public class RITCompress
      * @param values the list of pixel values to be used
      * @return a 2D array of pixel values
      */
-    private static int[][] listToImage(ArrayList<Integer> values)
+    public static int[][] listToImage(ArrayList<Integer> values)
     {
         //Error Check: Provided image is not a square
         double tempSideLength = Math.sqrt(values.size());
@@ -48,7 +48,7 @@ public class RITCompress
      * @param file Scanner containing file to read from
      * @return list containing each pixel value
      */
-    private static ArrayList<Integer> readFile(Scanner file)
+    public static ArrayList<Integer> readFile(Scanner file)
     {
         ArrayList<Integer> image = new ArrayList<Integer>();
 
@@ -82,19 +82,17 @@ public class RITCompress
      * Given a quadtree, writes the quadtree to given file.
      *
      * @param root the quadtree data to use
-     * @param fileName name of file to write to
+     * @param file the file to write to
      * @return number of values written
      */
-    private static int writeQuadtree(RITQTNode root, String fileName)
+    public static int writeQuadtree(RITQTNode root, File file)
     {
-        String directory = "output/compressed/";
-        fileName += ".txt";
-
         int totalValues = -1;
+        String path = "";
+
         try
         {
             //Checks whether or not file is already there
-            File file = new File(directory + fileName);
             if(!file.createNewFile())
             {
                 System.out.println("Compressed file already exists!");
@@ -102,6 +100,7 @@ public class RITCompress
             }
 
             //Writes quadtree to file, using quadtree's string representation
+            path = file.getCanonicalPath();
             FileWriter writer = new FileWriter(file);
             String[] values = root.toString().split(" ");
             for(int i = 0; i < values.length; i++)
@@ -116,7 +115,7 @@ public class RITCompress
         }
         catch(IOException e){e.printStackTrace();}
 
-        System.out.println("Output file: " + directory + fileName);
+        System.out.println("Output file: " + path);
 
         return totalValues;
     }
@@ -153,8 +152,8 @@ public class RITCompress
         System.out.println("QTree: " + quadtree.toString());
 
         //Writes quadtree to text file
-        String fileName = args[0].substring(args[0].lastIndexOf("/") + 1, args[0].lastIndexOf("."));
-        int totalValues = writeQuadtree(quadtree, fileName);
+        File output = new File(args[1]);
+        int totalValues = writeQuadtree(quadtree, output);
 
         //Display compression stats
         System.out.println("Raw image size: " + sideLength * sideLength);

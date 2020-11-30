@@ -19,7 +19,7 @@ public class RITUncompress
      * @param values Quadtree values
      * @return Quadtree node
      */
-    private static RITQTNode parse(ArrayList<Integer> values)
+    public static RITQTNode parse(ArrayList<Integer> values)
     {
         int val = values.remove(0);
 
@@ -36,7 +36,7 @@ public class RITUncompress
      * @param file Scanner containing file to read from
      * @return list containing each pixel file
      */
-    private static ArrayList<Integer> readFile(Scanner file)
+    public static ArrayList<Integer> readFile(Scanner file)
     {
         ArrayList<Integer> tokens = new ArrayList<Integer>();
 
@@ -70,17 +70,15 @@ public class RITUncompress
      * Given an 2D pixel array, writes image to given file.
      *
      * @param image the 2D pixel array
-     * @param fileName the file to write to
+     * @param file the file to write to
      */
-    private static void writeImage(int[][] image, String fileName)
+    public static void writeImage(int[][] image, File file)
     {
-        String directory = "output/uncompressed/";
-        fileName += ".txt";
+        String path = "";
 
         try
         {
             //Checks whether or not file is already there
-            File file = new File(directory + fileName);
             if(!file.createNewFile())
             {
                 System.out.println("Uncompressed file already exists!");
@@ -88,6 +86,7 @@ public class RITUncompress
             }
 
             //Writes image to file
+            path = file.getCanonicalPath();
             FileWriter writer = new FileWriter(file);
             for(int row = 0; row < image.length; row++)
             {
@@ -105,7 +104,7 @@ public class RITUncompress
         }
         catch(IOException e){e.printStackTrace();}
 
-        System.out.println("Output file: " + directory + fileName);
+        System.out.println("Output file: " + path);
     }
 
     public static void main(String[] args)
@@ -151,7 +150,7 @@ public class RITUncompress
         image = quadtree.uncompress(image, sideLength);
 
         //Pixel array is written to file
-        String fileName = args[0].substring(args[0].lastIndexOf("/") + 1, args[0].lastIndexOf("."));
-        writeImage(image, fileName);
+        File file = new File(args[1]);
+        writeImage(image, file);
     }
 }
