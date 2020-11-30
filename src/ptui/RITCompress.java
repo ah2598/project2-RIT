@@ -3,6 +3,8 @@ package ptui;
 import model.RITQTNode;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -32,7 +34,7 @@ public class RITCompress
         {
             for(int col = 0; col < sideLength; col++)
             {
-                image[row][col] = values.remove(0);
+                image[row][col] = (int)values.remove(0);
             }
         }
 
@@ -76,6 +78,49 @@ public class RITCompress
         return image;
     }
 
+    /**
+     * Given a quadtree, writes the quadtree to given file.
+     *
+     * @param root the quadtree data to use
+     * @param fileName name of file to write to
+     * @return number of values written
+     */
+    private static int writeQuadtree(RITQTNode root, String fileName)
+    {
+        String directory = "output/compressed/";
+        fileName += ".txt";
+
+        int totalValues = -1;
+        try
+        {
+            //Checks whether or not file is already there
+            File file = new File(directory + fileName);
+            if(!file.createNewFile())
+            {
+                System.out.println("Compressed file already exists!");
+                System.exit(-1);
+            }
+
+            //Writes quadtree to file, using quadtree's string representation
+            FileWriter writer = new FileWriter(file);
+            String[] values = root.toString().split(" ");
+            for(int i = 0; i < values.length; i++)
+            {
+                writer.write(values[i]);
+                if(i != values.length - 1)
+                    writer.write("\n");
+            }
+
+            totalValues = values.length;
+            writer.close();
+        }
+        catch(IOException e){e.printStackTrace();}
+
+        System.out.println("Output file: " + directory + fileName);
+
+        return totalValues;
+    }
+
     public static void main(String[] args)
     {
         if (args.length != 2) {
@@ -103,8 +148,17 @@ public class RITCompress
         int[][] image = listToImage(pixels);
         int sideLength = image.length;
 
-        //Converts image array to RIT node
-        RITQTNode quadtree = RITQTNode.compress(image, 0, 0, sideLength);
+        //Converts image array to Quadtree
+        RITQTNode quadtree = RITQTNode.compress(image, sideLength);
         System.out.println("QTree: " + quadtree.toString());
+
+        //Writes quadtree to text file
+        String fileName = args[0].substring(args[0].lastIndexOf("/") + 1, args[0].lastIndexOf("."));
+        int totalValues = writeQuadtree(quadtree, fileName);
+
+        //Display compression stats
+        System.out.println("Raw image size: " + sideLength * sideLength);
+        System.out.println("Compressed image size: " + totalValues);
+        System.out.println("Compression %: " + (sideLength * sideLength * 10.0) / totalValues);
     }
 }
